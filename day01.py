@@ -11,7 +11,7 @@ def calc_calories() -> list:
         list: List of all summed up callory values
     """
     int_list = []
-    with open('day1_input.txt', 'r') as file:
+    with open('day01_input.txt', 'r', encoding='utf8') as file:
         lines = file.readlines()
         for line in lines:
             line = line.strip()
