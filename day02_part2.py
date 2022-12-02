@@ -25,12 +25,20 @@ class RockPaperScissors:
             return matches
 
     def get_outcome(self, matches:list[list]) -> list[list]:
+        """Sets the strategy whether the game is won, lost or drawn
+
+        Args:
+            matches (list[list]): List of lists with all encounters
+
+        Returns:
+            list[list]: List of list with all encounters plus strategy
+        """
         outcome = {
             'win': {'A':'Y','B':'Z', 'C':'X'},
             'draw': {'A':'X','B':'Y', 'C':'Z'},
             'loose': {'A':'Z','B':'X', 'C':'Y'}
         }
-        
+
         for game in matches:
             if game[1] == "X":
                 game.append(0)
