@@ -56,7 +56,7 @@ class CampCleanup(object):
         """Calculates full overlap between id ranges
 
         Returns:
-            int: _description_
+            int: number of full overlap
         """
         overlapping = 0
         for pair in self.section_id_pairs:
