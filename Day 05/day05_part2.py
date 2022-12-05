@@ -1,7 +1,7 @@
 """
 Advent of Code 2022
 Day:    5
-Part:   2
+Part:   1
 """
 
 class CratePileMovement:
@@ -42,6 +42,11 @@ class CratePileMovement:
         return crate_piles
 
     def _get_movements(self) -> list[list]:
+        """Gets movemnet instructions from a file
+
+        Returns:
+            list[list]: list of lits containing movemnet instructions
+        """
         with open(self.filename, 'r', encoding='utf-8') as file:
             lines = file.readlines()
             movements = []
@@ -77,8 +82,10 @@ def main():
     cpm = CratePileMovement('day05_input.txt', 9)
     for move in cpm.movements:
         cpm.movement(move)
+    answer = ""
     for crate in cpm.crate_piles:
-        print(crate[-1])
+        answer += crate[-1][1:2]
+    print(answer)
 
 if __name__ == '__main__':
     main()
