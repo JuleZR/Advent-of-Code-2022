@@ -9,6 +9,14 @@ class CratePileMovement:
     Class representing a Crane, the movement and the cargo stacks
     """
     def __init__(self, filename: str, d_index: int):
+        """
+        Creates a instance of a CratePileMovement,
+        from a given text file.
+
+        Args:
+            filename (str): name of the file
+            d_index (int): number of piles as an integer
+        """
         self.filename = filename
         self.d_index = d_index
         self.crate_piles = self._get_crate_piles()
@@ -49,10 +57,14 @@ class CratePileMovement:
             return movements
 
     def movement(self, movement:list):
+        """Modifys the cratelist by given movement
+
+        Args:
+            movement (list): containing amount, start and target
+        """
         amount = movement[0]
         start = movement[1] - 1
         target = movement[2] - 1
-        
         m_crates = self.crate_piles[start][-amount:]
         if len(m_crates) > 1:
             m_crates.reverse()
@@ -65,8 +77,6 @@ class CratePileMovement:
 def main():
     """ Main function"""
     cpm = CratePileMovement('day05_input.txt', 9)
-    #for idx, crates in enumerate(cpm.crate_piles):
-    #    print(idx+1, crates)
     for move in cpm.movements:
         cpm.movement(move)
     for crate in cpm.crate_piles:
