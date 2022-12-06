@@ -18,7 +18,7 @@ class ElvenComunicator:
         except FileNotFoundError as err:
             print(f"{err}:\nCouldn't find file: {filename}")
     
-    def distinct_signals(self, data:str) -> int:
+    def distinct_signal(self, data:str) -> int:
         """
         Takes a string data sequence and calculates the number of
         proccessed characters
@@ -41,7 +41,7 @@ class ElvenComunicator:
 def main():
     """ Main function """
     elf_com = ElvenComunicator('day06_input.txt')
-    elf_com.distinct_signals(elf_com.signal)
+    elf_com.distinct_signal(elf_com.signal)
 
 if __name__ == "__main__":
     main()
