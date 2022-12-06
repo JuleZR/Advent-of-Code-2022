@@ -1,7 +1,7 @@
 """
 Advent of Code 2022
 Day:    5
-Part:   1
+Part:   2
 """
 
 class CratePileMovement:
@@ -23,6 +23,11 @@ class CratePileMovement:
         self.movements = self._get_movements()
 
     def _get_crate_piles(self) -> list:
+        """gets crate piles from a text file
+
+        Returns:
+            list: list of lists containing crate piles
+        """
         with open(self.filename, 'r', encoding='utf-8') as file:
             crate_rows = []
             crate_piles = []
