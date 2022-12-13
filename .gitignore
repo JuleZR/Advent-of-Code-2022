@@ -1,2 +1,4 @@
-example.txt
+example*.txt
+debug_*.py
+test*.py
 .vscode/settings.json

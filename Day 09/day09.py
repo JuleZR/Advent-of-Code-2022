@@ -1,92 +1,109 @@
 """
 Advent of Code 2022
-Day:    09
+Day 09
 """
 
-import sys
 from tabulate import tabulate
+
+MOVE_MAP = {
+    'R': [1, 0],
+    'L': [-1, 0],
+    'U': [0, 1],
+    'D': [0, -1]
+}
 
 
 class Rope:
-    def __init__(self, filename):
-        self.movement = self._parse(filename)
-        self.head = [hp for hp in self._move_head()]
-        self.tail = self._move_tail(self.head)
+    def __init__(self, directions):
+        self.hx, self.hy = 0, 0
+        self.tx, self.ty = 0, 0
+        self.directions = directions
+        self.tail = set()
 
-    def _parse(self, filename):
-        try:
-            with open(filename, 'r') as f:
-                lines = [item.strip().split(' ') for item in f.readlines()]
-                directions = [[d, int(a)] for d, a in lines]
-                return directions
-        except FileNotFoundError:
-            print(f'Error [404] - File "{filename}" not found')
-            sys.exit('Problem terminated by error')
+    def touch(self, x1, y1, x2, y2):
+        return abs(x1 - x2) <= 1 and abs(y1 - y2) <= 1
 
-    def _move_head(self):
-        hx, hy = 0, 0
-        yield hx, hy
-        for move in self.movement:
-            for _ in range(move[1]):
-                match move[0]:
-                    case 'R':
-                        hx += 1
-                    case 'L':
-                        hx -= 1
-                    case 'U':
-                        hy += 1
-                    case 'D':
-                        hy -= 1
-                yield hx, hy
+    def move(self, dx, dy):
+        self.hx += dx
+        self.hy += dy
 
-    def _move_tail(self, cords_to_follow: list):
-        tail_cords = [(0, 0)]
-        for h_point in cords_to_follow:
-            hx, hy = h_point
-            tx, ty = tail_cords[-1]
-            dx, dy = tx - hx, ty - hy
-            if abs(dx) <= 1 and abs(dy) <= 1:
-                continue
-            if abs(dx) < abs(dy):
-                tx = hx
-                ty = hy + (dy + 1) if dy < 0 else hy + (dy - 1)
-                tail_cords.append((tx, ty))
-            elif abs(dx) > abs(dy):
-                tx = hx + (dx + 1) if dx < 0 else hx + (dx - 1)
-                ty = hy
-                tail_cords.append((tx, ty))
-        return tail_cords
+        if not self.touch(self.hx, self.hy, self.tx, self.ty):
+            change_x = 0 if self.hx == self.tx \
+                else (self.hx - self.tx) / abs(self.hx - self.tx)
+            change_y = 0 if self.hy == self.ty \
+                else (self.hy - self.ty) / abs(self.hy - self.ty)
+
+            self.tx += change_x
+            self.ty += change_y
+        return self.tx, self.ty
+
+    def calc(self):
+        for line in self.directions:
+            operation, amount = line.split(' ')
+            amount = int(amount)
+            dx, dy = MOVE_MAP[operation]
+
+            for _ in range(amount):
+                tx, ty = self.move(dx, dy)
+                self.tail.add((self.tx, self.ty))
 
 
-class LongRope(Rope):
-    def __init__(self, filename):
-        super().__init__(filename)
-        self.movement = self._parse(filename)
-        self.head = [hp for hp in self._move_head()]
-        self.tail_1 = self._move_tail(self.head)
-        self.tail_2 = self._move_tail(self.tail_1)
-        self.tail_3 = self._move_tail(self.tail_2)
-        self.tail_4 = self._move_tail(self.tail_3)
-        self.tail_5 = self._move_tail(self.tail_4)
-        self.tail_6 = self._move_tail(self.tail_5)
-        self.tail_7 = self._move_tail(self.tail_6)
-        self.tail_8 = self._move_tail(self.tail_7)
-        self.tail_9 = self._move_tail(self.tail_8)
+class LongerRope:
+    def __init__(self, directions):
+        self.rope = [[0, 0] for _ in range(10)]
+        self.directions = directions
+        self.tail = set()
+
+    def touch(self, x1, y1, x2, y2):
+        return abs(x1 - x2) <= 1 and abs(y1 - y2) <= 1
+
+    def move(self, dx, dy):
+        self.rope[0][0] += dx
+        self.rope[0][1] += dy
+        for i in range(1, 10):
+            hx, hy = self.rope[i - 1]
+            tx, ty = self.rope[i]
+            if not self.touch(hx, hy, tx, ty):
+                change_x = 0 if hx == tx else (hx - tx) / abs(hx - tx)
+                change_y = 0 if hy == ty else (hy - ty) / abs(hy - ty)
+                tx += change_x
+                ty += change_y
+            self.rope[i] = [tx, ty]
+
+    def calc(self):
+        for line in self.directions:
+            operation, amount = line.split(' ')
+            amount = int(amount)
+            dx, dy = MOVE_MAP[operation]
+
+            for _ in range(amount):
+                self.move(dx, dy)
+                self.tail.add(tuple(self.rope[-1]))
 
 
-def solutions(filename):
-    solution = [['Advent of Code 2022', 'Day 9']]
+def parse(filename):
+    with open(filename) as file:
+        lines = file.read().strip(). split('\n')
+        return lines
 
-    s_rope = Rope(filename)
-    solution.append(['Part 1', len(set(s_rope.tail))])
 
-    l_rope = LongRope(filename)
-    solution.append(['Part 2', len(set(l_rope.tail_9))])
-    print(tabulate(solution, tablefmt='fancy_grid'))
+def solutions(directions):
+    solver_table = [['Advent of Code 2022', 'Day 9']]
+
+    s_rope = Rope(directions)
+    s_rope.calc()
+    solver_table.append(['Part 1', len(s_rope.tail)])
+
+    l_rope = LongerRope(directions)
+    l_rope.calc()
+    solver_table.append(['Part 2', len(l_rope.tail)])
+    print(tabulate(solver_table, tablefmt='fancy_grid'))
 
 
 def main():
-    solutions('day09_input.txt')
+    """ Main function """
+    directions = parse('day09_input.txt')
+    solutions(directions)
 
 
 if __name__ == '__main__':
