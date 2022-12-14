@@ -51,12 +51,14 @@ class Process:
                 x_values.append(register)
         return x_values
 
+
 def parse(filename: str):
     try:
         with open(filename, 'r') as file:
             return [line.strip().split(' ') for line in file.readlines()]
     except FileNotFoundError:
         print(f"[404]: File {filename} not found")
+
 
 def draw(x_val):
     output = ""
@@ -67,6 +69,7 @@ def draw(x_val):
         else:
             output += "."
     print(output)
+
 
 def solution1(commands):
     prog = Process(commands)
@@ -91,7 +94,7 @@ def solution2(commands):
     draw(xl_4)
     draw(xl_5)
     draw(xl_6)
-    
+
 
 def main():
     """ Main function """
