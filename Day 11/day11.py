@@ -1,160 +1,149 @@
 """
 Advent of Code 2022
-Day   11
+Day     11
+Part     1
 """
 
+from dataclasses import dataclass
+from tabulate import tabulate
 
+
+@dataclass
 class Monkey:
-    def __init__(self, index: int, items: list[int],
-                 operation: list[str, int | str],
-                 divisor: int, test_map: dict):
-        self.index = index
-        self.items = items
-        self.op = operation
-        self.divisor = divisor
-        self.test = test_map
-        self.inspected: int = 0
-
-    def __repr__(self) -> str:
-        return f'#{self.index} 🐒'
+    items: list
+    operation: list
+    divisor: int
+    test_map: dict
+    inspections: int = 0
 
 
-class MonkeyHorde:
+class MonkeyHerd:
     def __init__(self, filename: str):
-        self.monkeys: list = []
-        self._parse(filename)
-        self.mod_product = self._calc_product()
+        self.herd: list = []
+        self._parse_input(filename)
 
-    def _parse(self, filename):
+    def _parse_input(self, filename: str):
         with open(filename, 'r') as f:
             lines = [line.strip() for line in f.readlines()]
 
-            raw_index = lines[0::7]
-            indeces = [int(i[7::].rstrip(':')) for i in raw_index]
-
+            # collect item lists
+            items_lst = []
             raw_items = lines[1::7]
-            items: list = []
-            for itm in raw_items:
-                itm = itm[16::].replace(' ', '').split(',')
-                itm = list(map(int, itm))
-                items.append(itm)
+            for items in raw_items:
+                items = items[16:].replace(' ', '').split(',')
+                items = list(map(int, items))
+                items_lst.append(items)
 
+            # collect operations
+            op_lst = []
             raw_op = lines[2::7]
-            op_lst: list = []
-            for op in raw_op:
-                op = op[21::].split(' ')
-                op = [int(o) if o.isdigit() else o for o in op]
-                op_lst.append(op)
+            for operation in raw_op:
+                operation = operation[21:].split(' ')
+                operation = [int(op) if op.isdigit() else op
+                             for op in operation]
+                op_lst.append(operation)
 
-            raw_divisor = lines[3::7]
-            divisor_lst: list = []
-            for div in raw_divisor:
-                div = div[19::]
-                divisor_lst.append(div)
-            divisor_lst = list(map(int, divisor_lst))
+            raw_div = lines[3::7]
+            divisor_lst = [int(div[19:]) for div in raw_div]
 
-            test: list = []
-            raw_test_true = lines[4::7]
-            raw_test_false = lines[5::7]
-            for idx, t_test in enumerate(raw_test_true):
-                t_test = int(t_test[25::])
-                f_test = int(raw_test_false[idx][26::])
-                test_dict = {True: t_test, False: f_test}
-                test.append(test_dict)
+            # get test map
+            test_map_lst = []
+            raw_true = lines[4::7]
+            raw_false = lines[5::7]
+            true_lst = [int(t[25:]) for t in raw_true]
+            false_lst = [int(f[26:]) for f in raw_false]
+            for idx, true in enumerate(true_lst):
+                test_map_lst.append({True: true, False: false_lst[idx]})
 
-            for i, m in enumerate(indeces):
-                self.monkeys.append(
+            for i, _ in enumerate(items_lst):
+                self.herd.append(
                     Monkey(
-                        indeces[i], items[i], op_lst[i],
-                        divisor_lst[i], test[i])
+                        items_lst[i],
+                        op_lst[i],
+                        divisor_lst[i],
+                        test_map_lst[i]
+                    )
                 )
 
-    def _calc_worry(self, item_lvl: int, op_lst: list) -> int():
-        op, val = op_lst
+    def get_interactions(self):
+        interacts = []
+        for monkey in self.herd:
+            interacts.append(monkey.inspections)
+        return interacts
+
+    def calculate_worry(self, current: int, operation: list) -> int:
+        op, val = operation
         if val == "old":
-            val = item_lvl
+            val = current
         match op:
             case '+':
-                return item_lvl + val
-            case '-':
-                return item_lvl - val
+                return (current + val)
             case '*':
-                return item_lvl * val
+                return (current * val)
 
-    def _calc_product(self) -> int:
-        product = 1
-        for mon in self.monkeys:
-            product *= mon.divisor
-        return product
+    def isdividable(self, value: int, divisor: int):
+        return value % divisor == 0
 
-    def is_congruent(self, worry: int) -> bool:
-        return worry % self.mod_product == 0
-
-    def is_devisable(self, worry: int, divisor: int) -> bool:
-        return worry % divisor == 0
-
-    def throw_items_1(self):
+    def throw_20(self):
         for _ in range(20):
-            for m in self.monkeys:
-                for idx, item in enumerate(m.items):
-                    worry = self._calc_worry(item, m.op)
-                    bored_worry = worry // 3
-                    div_chk = self.is_devisable(bored_worry, m.divisor)
-                    target = m.test[div_chk]
-                    self.monkeys[target].items.append(bored_worry)
-                    m.inspected += 1
+            for monkey in self.herd:
+                for item in monkey.items:
+                    inc_worry = self.calculate_worry(item, monkey.operation)
+                    current_worry = (inc_worry // 3)
+                    mapping = self.isdividable(current_worry, monkey.divisor)
+                    target = monkey.test_map[mapping]
+                    self.herd[target].items.append(current_worry)
+                    monkey.inspections += 1
+                monkey.items = []
 
-                    if idx == len(m.items) - 1:
-                        m.items = []
-
-    def throw_items_2(self):
-        for _ in range(10_000):
-            for m in self.monkeys:
-                for idx, item in enumerate(m.items):
-                    worry = self._calc_worry(item, m.op)
-                    div_chk = self.is_congruent(worry)
-                    target = m.test[div_chk]
-                    self.monkeys[target].items.append(worry)
-                    m.inspected += 1
-
-                    if idx == len(m.items) - 1:
-                        m.items = []
+    def throw_x(self, rounds: int):
+        supermodulo = 1
+        for monkey in self.herd:
+            supermodulo *= monkey.divisor
+        for _ in range(rounds):
+            for monkey in self.herd:
+                for item in monkey.items:
+                    c_worry = self.calculate_worry(item, monkey.operation)
+                    mapping = self.isdividable(c_worry, supermodulo)
+                    target = monkey.test_map[mapping]
+                    self.herd[target].items.append(c_worry)
+                    monkey.inspections += 1
+                monkey.items = []
 
 
-def calc_product(*args):
-    product = 1
+def product(*args):
+    prod = 1
     for arg in args:
-        product *= arg
-    return product
+        prod *= arg
+    return prod
 
 
-def part_one(filename: str):
-    part_1 = MonkeyHorde(filename)
-    part_1.throw_items_1()
-
-    buisiness_1: list = []
-    for mon in part_1.monkeys:
-        buisiness_1.append(mon.inspected)
-    buisiness_1.sort(reverse=True)
-    buisiness_1 = buisiness_1[:2]
-    print(calc_product(*buisiness_1))
+def part_one(filename):
+    part1 = MonkeyHerd(filename)
+    part1.throw_20()
+    pt1_inspect = part1.get_interactions()
+    pt1_inspect.sort(reverse=True)
+    pt1_inspect = pt1_inspect[:2]
+    return ['Part 1', product(*pt1_inspect)]
 
 
-def part_two(filename: str):
-    part_2 = MonkeyHorde(filename)
-    part_2.throw_items_2()
-    buisiness_2:  list = []
-    for mon in part_2.monkeys:
-        buisiness_2.append(mon.inspected)
-    buisiness_2.sort(reverse=True)
-    buisiness_2 = buisiness_2[:2]
-    print(calc_product(*buisiness_2))
+def part_two(filename):
+    part2 = MonkeyHerd(filename)
+    part2.throw_x(10_000)
+    pt2_inspect = part2.get_interactions()
+    pt2_inspect.sort(reverse=True)
+    pt2_inspect = pt2_inspect[:2]
+    return ['Part 2', product(*pt2_inspect)]
 
 
-def main():
-    part_one('day11_input.txt')
-    part_two('example1.txt')
+def main(filename):
+    solution_tbl = [['Day 11', 'Solution']]
+    pt1 = part_one(filename)
+    pt2 = part_two(filename)
+    solution_tbl.append(pt1)
+    solution_tbl.append(pt2)
+    print(tabulate(solution_tbl, tablefmt='fancy_grid', numalign='r'))
 
 
 if __name__ == '__main__':
-    main()
+    main('example1.txt')
