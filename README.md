@@ -14,7 +14,7 @@ This reporsitory contains the code needed to solve the Advent of Code 2022 codin
 <tr><td>Day 7: No Space Left On Device</td><td>⭐⭐</td></tr>
 <tr><td>Day 8: Treetop Tree House</td><td>⭐⭐</td></tr>
 <tr><td>Day 9: Rope Bridge</td><td>⭐⭐</td></tr>
-<tr><td>Day 10: Cathode-Ray Tube<td><td>⭐⭐</td></tr>
+<tr><td>Day 10: Cathode-Ray Tube</td><td>⭐⭐</td></tr>
 <tr><td>Day 11: Monkey in the Middle<td>⭐<td><td</tr>
 <tr><td>12<td><td><td</tr>
 <tr><td>13<td><td><td</tr>
