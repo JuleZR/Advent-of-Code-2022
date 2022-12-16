@@ -3,7 +3,7 @@ This reporsitory contains the code needed to solve the Advent of Code 2022 codin
 
 ## Overview
 
-<table>
+<table width=400>
 <tr><th>Day</th><th>Puzzle</th><th>Stars</th></tr>
 <tr><td>Day 1</td><td>Calorie Counting</td><td>⭐⭐</td></tr>
 <tr><td>Day 2</td><td>Rock Paper Scissors</td><td>⭐⭐</td></tr>
