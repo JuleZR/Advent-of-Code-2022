@@ -15,7 +15,7 @@ This reporsitory contains the code needed to solve the Advent of Code 2022 codin
 <tr><td>Day 8</td><td>Treetop Tree House</td><td>⭐⭐</td></tr>
 <tr><td>Day 9</td><td>Rope Bridge</td><td>⭐⭐</td></tr>
 <tr><td>Day 10</td><td>Cathode-Ray Tube</td><td>⭐⭐</td></tr>
-<tr><td>Day 11</td><td>Monkey in the Middle<td>⭐<td><td</tr>
+<tr><td>Day 11</td><td>Monkey in the Middle</td><td>⭐</td></tr>
 <tr><td>Day 12</td><td> - </td><td> - </td></tr>
 <tr><td>Day 13</td><td> - </td><td> - </td></tr>
 <tr><td>Day 14</td><td> - </td><td> - </td></tr>
